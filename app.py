@@ -15,5 +15,23 @@ def home():
 # main route for app
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
+    if request.method == 'POST':    # if form submitted
         query = request.form.get('search_query', '')
+        recipes = search_recipes('query')   # perform search for recipes with query
+
+        return render_template('index.html', recipes=recipes, search_query=query)
+
+    search_query = request.args.get('search_query', '')     # no form submitted
+    decoded_search_query = unquote(search_query)
+    recipes = search_recipes(decoded_search_query)
+    return render_template('index.html', recipes=recipes, search_query=decoded_search_query)
+
+def search_recipes(query):
+    url = f'https://api.spoonacular.com/recipes/complexSearch'
+    params = {
+        'apiKey': API_KEY,
+        'query': query
+        'number': 10,
+        'instructionsRequired': True,
+        'addRecipeInformation'
+    }
